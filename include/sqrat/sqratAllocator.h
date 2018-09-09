@@ -30,32 +30,12 @@
 
 #include <squirrel.h>
 #include <string.h>
+#include <type_traits>
 
 #include "sqratObject.h"
 #include "sqratTypes.h"
 
 namespace Sqrat {
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/// @cond DEV
-/// utility taken from http://stackoverflow.com/questions/2733377/is-there-a-way-to-test-whether-a-c-class-has-a-default-constructor-other-than/2770326#2770326
-/// may be obsolete in C++ 11
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template< class T >
-class is_default_constructible {
-    template<int x>
-    class receive_size{};
-
-    template< class U >
-    static int sfinae( receive_size< sizeof U() > * );
-
-    template< class U >
-    static char sfinae( ... );
-
-public:
-    enum { value = sizeof( sfinae<T>(0) ) == sizeof(int) };
-};
-/// @endcond
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// DefaultAllocator is the allocator to use for Class that can both be constructed and copied
@@ -119,7 +99,7 @@ public:
     ///
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     static SQInteger New(HSQUIRRELVM vm) {
-        SetInstance(vm, 1, NewC<C, is_default_constructible<C>::value >().p);
+        SetInstance(vm, 1, NewC<C, std::is_default_constructible<C>::value >().p);
         return 0;
     }
 
@@ -601,7 +581,7 @@ public:
     ///
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     static SQInteger New(HSQUIRRELVM vm) {
-        SetInstance(vm, 1, NewC<C, is_default_constructible<C>::value >().p);
+        SetInstance(vm, 1, NewC<C, std::is_default_constructible<C>::value >().p);
         return 0;
     }
 
